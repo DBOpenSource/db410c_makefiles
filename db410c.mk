@@ -124,7 +124,6 @@ setup-emmc: $(TMP_DIR)/bootloader/flashall
 	@cd $(TMP_DIR)/bootloader && sudo ./flashall
 
 # Firmware for DB410C
-PHONY _firmware: $(FIRMWARE_ZIP)
 $(FIRMWARE_ZIP): 
 	@echo
 	@echo "********************************************************************************************"
@@ -136,7 +135,7 @@ $(FIRMWARE_ZIP):
 	@echo "*"
 	@echo "* and after accepting the EULA, save the file to:"
 	@echo "*"
-	@echo "*    $(FIRMWARE_DEST_DIR)"
+	@echo "*    $@"
 	@echo "*"
 	@echo "* Afterward, retry running make"
 	@echo "*"
