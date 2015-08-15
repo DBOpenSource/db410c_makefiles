@@ -7,7 +7,6 @@
 # BOOT_IMG		Location of boot image
 # IMAGE			Location of Linux kernel image
 # INITRD		Location of initrd image
-# KERNEL_CONFIG		Location of kernel config file
 # DTB			Location of Device Tree Binary
 #
 # The skales repo is at: git://codeaurora.org/quic/kernel/skales
@@ -16,6 +15,10 @@
 #
 # DB410C_KERNEL		Directory for the kernel source
 # SKALES		Location of cloned skales repository
+#
+# if BUILD_DEFAULT_KERNEL=1 then the following must be provided:
+#
+# KERNEL_CONFIG		Location of kernel config file
 #
 
 ifeq ($(DOWNLOAD_DIR),)
@@ -46,10 +49,6 @@ ifeq ($(IMAGE),)
 $(error IMAGE Undefined)
 endif
 
-ifeq ($(KERNEL_CONFIG),)
-$(error KERNEL_CONFIG Undefined)
-endif
-
 INITRD:=$(DOWNLOAD_DIR)/initrd.img-4.0.0-linaro-lt-qcom
 DB410C_KERNEL?=db410c-linux
 KERNEL_VERSION?=release/qcomlt-4.0
@@ -75,6 +74,12 @@ $(SKALES):
 $(INITRD): $(DOWNLOAD_DIR)/.exists
 	@[ -f $@ ] || (cd $(DOWNLOAD_DIR) && wget http://builds.96boards.org/snapshots/dragonboard410c/linaro/ubuntu/latest/initrd.img-4.0.0-linaro-lt-qcom)
 
+ifeq ($(BUILD_DEFAULT_KERNEL),1)
+
+ifeq ($(KERNEL_CONFIG),)
+$(error KERNEL_CONFIG Undefined)
+endif
+
 $(DB410C_KERNEL):
 	@git clone -n git://git.linaro.org/landing-teams/working/qualcomm/kernel.git $@
 	@(cd $@ && git checkout -b $(KERNEL_BRANCH) $(KERNEL_VERSION))
@@ -85,6 +90,7 @@ $(IMAGE) $(DTS): $(DB410C_KERNEL) $(KERNEL_CONFIG)
 	@(cp $(KERNEL_CONFIG) $(DB410C_KERNEL)/.config)
 	@(cd $(DB410C_KERNEL) && ARCH=arm64 make oldconfig)
 	@(cd $(DB410C_KERNEL) && CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make -j4 Image dtbs)
+endif
 
 # Required for dtbTool and mkbootimg
 PATH:=$(SKALES):$(PATH)
