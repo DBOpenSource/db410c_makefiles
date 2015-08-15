@@ -101,8 +101,8 @@ setup-emmc: $(TMP_DIR)/bootloader/flashall
 	@cd $(TMP_DIR)/bootloader && sudo ./flashall
 
 # Firmware for DB410C
-firmware: $(DOWNLOAD_DIR)/linux-ubuntu-board-support-package-v1.zip
-$(DOWNLOAD_DIR)/linux-ubuntu-board-support-package-v1.zip: $(DOWNLOAD_DIR)
+firmware: $(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
+$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip: 
 	@echo
 	@echo "********************************************************************************************"
 	@echo "* YOU NEED TO DOWNLOAD THE FIRMWARE FROM QDN"
