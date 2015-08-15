@@ -20,6 +20,10 @@
 #
 # KERNEL_CONFIG		Location of kernel config file
 #
+# if FIRMWARE_UNPACK_DIR is defined then the target firmware-unpack
+# will unpack the firmware to FIRMWARE_UNPACK_DIR
+#
+
 
 ifeq ($(DOWNLOAD_DIR),)
 $(error DOWNLOAD_DIR Undefined)
@@ -54,6 +58,17 @@ DB410C_KERNEL?=db410c-linux
 KERNEL_VERSION?=release/qcomlt-4.0
 KERNEL_BRANCH:=_build_branch
 SKALES?=skales
+
+FIRMWARE_ZIP:=$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
+
+ifeq ($(FIRMWARE_UNPACK_DIR),)
+
+firmware_unpack: $(FIRMWARE_UNPACK_DIR)/proprietary-ubuntu-1
+$(FIRMWARE_UNPACK_DIR)/proprietary-ubuntu-1: firmware
+	@(cd $(FIRMWARE_UNPACK_DIR) && unzip $(FIRMWARE_ZIP))
+	@(cd $(FIRMWARE_UNPACK_DIR) && tar xzpf proprietary-ubuntu-1.tgz --strip 1)
+
+endif
 
 $(DOWNLOAD_DIR):
 	mkdir -p $(DOWNLOAD_DIR)
