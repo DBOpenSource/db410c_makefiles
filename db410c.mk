@@ -20,8 +20,11 @@
 #
 # KERNEL_CONFIG		Location of kernel config file
 #
-# if FIRMWARE_UNPACK_DIR is defined then the target firmware-unpack
+# if FIRMWARE_UNPACK_DIR is defined then the target _firmware-unpack
 # will unpack the firmware to FIRMWARE_UNPACK_DIR
+#
+# The target _firmware will download provide instructions to
+# dowload the firmware
 #
 
 
@@ -61,12 +64,11 @@ SKALES?=skales
 
 FIRMWARE_ZIP:=$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
 
-ifeq ($(FIRMWARE_UNPACK_DIR),)
+ifneq ($(FIRMWARE_UNPACK_DIR),)
 
-firmware_unpack: $(FIRMWARE_UNPACK_DIR)/proprietary-ubuntu-1
-$(FIRMWARE_UNPACK_DIR)/proprietary-ubuntu-1: firmware
-	@(cd $(FIRMWARE_UNPACK_DIR) && unzip $(FIRMWARE_ZIP))
-	@(cd $(FIRMWARE_UNPACK_DIR) && tar xzpf proprietary-ubuntu-1.tgz --strip 1)
+_firmware_unpack: $(FIRMWARE_ZIP) $(DOWNLOAD_DIR)
+	[ -f $(DOWNLOAD_DIR)/proprietary-ubuntu-1.tgz ] || (cd $(DOWNLOAD_DIR) && unzip $(FIRMWARE_ZIP))
+	[ -f $(FIRMWARE_UNPACK_DIR)/.unpacked ] || (cd $(FIRMWARE_UNPACK_DIR) && tar xzpf $(DOWNLOAD_DIR)/proprietary-ubuntu-1.tgz --strip 1)
 
 endif
 
@@ -122,8 +124,8 @@ setup-emmc: $(TMP_DIR)/bootloader/flashall
 	@cd $(TMP_DIR)/bootloader && sudo ./flashall
 
 # Firmware for DB410C
-firmware: $(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
-$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip: 
+PHONY _firmware: $(FIRMWARE_ZIP)
+$(FIRMWARE_ZIP): 
 	@echo
 	@echo "********************************************************************************************"
 	@echo "* YOU NEED TO DOWNLOAD THE FIRMWARE FROM QDN"
