@@ -58,7 +58,7 @@ endif
 
 INITRD:=$(DOWNLOAD_DIR)/initrd.img-4.0.0-linaro-lt-qcom
 DB410C_KERNEL?=db410c-linux
-KERNEL_VERSION?=release/qcomlt-4.0
+KERNEL_VERSION?=origin/release/qcomlt-4.0
 KERNEL_BRANCH:=_build_branch
 SKALES?=skales
 
@@ -66,9 +66,11 @@ FIRMWARE_ZIP:=$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
 
 ifneq ($(FIRMWARE_UNPACK_DIR),)
 
-_firmware_unpack: $(FIRMWARE_ZIP) $(DOWNLOAD_DIR)
+$(FIRMWARE_UNPACK_DIR)/.unpacked: $(FIRMWARE_ZIP)
+	mkdir -p $(FIRMWARE_UNPACK_DIR)
 	[ -f $(DOWNLOAD_DIR)/proprietary-ubuntu-1.tgz ] || (cd $(DOWNLOAD_DIR) && unzip $(FIRMWARE_ZIP))
-	[ -f $(FIRMWARE_UNPACK_DIR)/.unpacked ] || (cd $(FIRMWARE_UNPACK_DIR) && tar xzpf $(DOWNLOAD_DIR)/proprietary-ubuntu-1.tgz --strip 1)
+	[ -f $(FIRMWARE_UNPACK_DIR)/.unpacked ] || tar -C $(FIRMWARE_UNPACK_DIR) -xzpf $(DOWNLOAD_DIR)/proprietary-ubuntu-1.tgz --strip 1
+	touch $@
 
 endif
 
