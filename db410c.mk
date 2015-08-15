@@ -56,6 +56,12 @@ KERNEL_VERSION?=release/qcomlt-4.0
 KERNEL_BRANCH:=_build_branch
 SKALES?=skales
 
+$(DOWNLOAD_DIR):
+	mkdir -p $(DOWNLOAD_DIR)
+
+$(TMP_DIR):
+	mkdir -p $(TMP_DIR)
+
 $(DOWNLOAD_DIR)/.exists: $(DOWNLOAD_DIR)
 	@[ -f $@ ] || touch $@
 
