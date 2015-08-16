@@ -62,8 +62,7 @@ endif
 
 INITRD:=$(DOWNLOAD_DIR)/initrd.img-4.0.0-linaro-lt-qcom
 DB410C_KERNEL?=db410c-linux
-KERNEL_VERSION?=release/qcomlt-4.0
-KERNEL_BRANCH:=_build_branch
+KERNEL_VERSION?=origin/release/qcomlt-4.0
 SKALES?=skales
 
 FIRMWARE_ZIP:=$(FIRMWARE_DEST_DIR)/linux-ubuntu-board-support-package-v1.zip
@@ -105,11 +104,11 @@ endif
 
 $(DB410C_KERNEL):
 	@git clone -n git://git.linaro.org/landing-teams/working/qualcomm/kernel.git $@
-	@(cd $@ && git checkout -b $(KERNEL_BRANCH) $(KERNEL_VERSION))
+	@(cd $@ && git checkout $(KERNEL_VERSION))
 
 # Make the DB410c kernel
 $(IMAGE) $(DTS): $(DB410C_KERNEL) $(KERNEL_CONFIG)
-	@(cd $(DB410C_KERNEL) && git checkout $(KERNEL_BRANCH))
+	@(cd $(DB410C_KERNEL) && git checkout $(KERNEL_VERSION))
 	@(cp $(KERNEL_CONFIG) $(DB410C_KERNEL)/.config)
 	@(cd $(DB410C_KERNEL) && ARCH=arm64 make oldconfig)
 	@(cd $(DB410C_KERNEL) && CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make -j4 Image dtbs)
